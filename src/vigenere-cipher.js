@@ -21,74 +21,85 @@ const { NotImplementedError } = require("../extensions/index.js");
  */
 class VigenereCipheringMachine {
   constructor(rev = false) {
-    this.flag = !rev;
+    this.flag = !rev; // true для прямой, false для обратной
   }
+
   encrypt(str, key) {
     if (!str || !key) {
       throw new Error("Incorrect arguments!");
     }
 
-    const s = str.toUpperCase();
-    let k = "";
-    let ki = 0;
-    for (let i = 0; i < s.length; i++) {
-      const charCode = s[i].charCodeAt();
-      if (charCode >= 65 && charCode <= 90) {
-        k += key[ki % key.length].toUpperCase();
-        ki += 1;
-      } else {
-        k += s[i];
-      }
-    }
-
-    let result = "";
-
-    for (let i = 0; i < s.length; i++) {
-      const charCode = s[i].charCodeAt();
-      if (charCode >= 65 && charCode <= 90) {
-        const keyCode = k[i].charCodeAt();
-        let code;
-        code = ((charCode - 65 + (keyCode - 65)) % 26) + 65;
-
-        result += String.fromCharCode(code);
-      } else {
-        result += s[i];
-      }
-    }
-    return this.flag ? result : result.split("").reverse("").join("");
-  }
-  decrypt(str, key) {
-    if (!str || !key) {
-      throw new Error("Incorrect arguments!");
-    }
     const s = this.flag
       ? str.toUpperCase()
       : str.split("").reverse().join("").toUpperCase();
     let k = "";
     let ki = 0;
+
+    // Генерация ключа
     for (let i = 0; i < s.length; i++) {
       const charCode = s[i].charCodeAt();
       if (charCode >= 65 && charCode <= 90) {
         k += key[ki % key.length].toUpperCase();
-        ki += 1;
+        ki++;
       } else {
-        k += s[i];
+        k += s[i]; // Сохраняем неалфавитные символы
       }
     }
 
     let result = "";
+
+    // Шифрование
     for (let i = 0; i < s.length; i++) {
       const charCode = s[i].charCodeAt();
       if (charCode >= 65 && charCode <= 90) {
         const keyCode = k[i].charCodeAt();
-        let code;
-        code = ((charCode - 65 - (keyCode - 65) + 26) % 26) + 65;
+        const code = ((charCode - 65 + (keyCode - 65)) % 26) + 65;
         result += String.fromCharCode(code);
       } else {
-        result += s[i];
+        result += s[i]; // Сохраняем неалфавитные символы
       }
     }
-    return this.flag ? result : result.split("").reverse("").join("");
+
+    return this.flag ? result : result.split("").reverse().join("");
+  }
+
+  decrypt(str, key) {
+    if (!str || !key) {
+      throw new Error("Incorrect arguments!");
+    }
+
+    const s = this.flag
+      ? str.toUpperCase()
+      : str.split("").reverse().join("").toUpperCase();
+    let k = "";
+    let ki = 0;
+
+    // Генерация ключа
+    for (let i = 0; i < s.length; i++) {
+      const charCode = s[i].charCodeAt();
+      if (charCode >= 65 && charCode <= 90) {
+        k += key[ki % key.length].toUpperCase();
+        ki++;
+      } else {
+        k += s[i]; // Сохраняем неалфавитные символы
+      }
+    }
+
+    let result = "";
+
+    // Расшифровка
+    for (let i = 0; i < s.length; i++) {
+      const charCode = s[i].charCodeAt();
+      if (charCode >= 65 && charCode <= 90) {
+        const keyCode = k[i].charCodeAt();
+        const code = ((charCode - 65 - (keyCode - 65) + 26) % 26) + 65;
+        result += String.fromCharCode(code);
+      } else {
+        result += s[i]; // Сохраняем неалфавитные символы
+      }
+    }
+
+    return this.flag ? result : result.split("").reverse().join("");
   }
 }
 
